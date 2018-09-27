@@ -1,0 +1,33 @@
+{
+  "name": "random-app1",
+  "version": "1.0.0",
+  "description": "random-app1",
+  "main": "server.js",
+  "scripts": {
+    "client-install": "npm i --prefix client",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimasina4/random-app1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dimasina4/random-app1/issues"
+  },
+  "homepage": "https://github.com/dimasina4/random-app1#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "concurrently": "^4.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.17"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
