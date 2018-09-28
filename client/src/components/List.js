@@ -44,7 +44,8 @@ export class List extends Component {
     super(props),
       (this.state = {
         emps: [],
-        dialogOpen: false
+        dialogOpen: false,
+        selectedProfile: {}
       });
   }
   componentDidMount() {
@@ -52,9 +53,8 @@ export class List extends Component {
     // this.setState({ emps: this.props.employe.emps });
     this.forceUpdate();
   }
-  handleOpenDialog = id => {
-    this.setState({ dialogOpen: true });
-    console.log(id);
+  handleOpenDialog = selectedProfile => {
+    this.setState({ dialogOpen: true, selectedProfile });
   };
   handleCloseDialog = () => {
     this.setState({ dialogOpen: false });
@@ -80,7 +80,7 @@ export class List extends Component {
         {this.props.employe.emps.map(item => (
           <Card key={item._id} className={classes.card}>
             <CardActionArea
-              onClick={this.handleOpenDialog(item._id)}
+              onClick={() => this.handleOpenDialog(item)}
               className={classes.cardAA}
             >
               <CardContent className={classes.cardContent}>
@@ -106,6 +106,7 @@ export class List extends Component {
               type="search"
               className={classes.textField}
               margin="normal"
+              value={this.state.selectedProfile.firstName}
             />
           </DialogContent>
           <DialogActions>
