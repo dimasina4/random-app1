@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PropType from "prop-types";
 import Service from "./components/Service";
 import List from "./components/List";
+import { Provider } from "react-redux";
+import store from "./store";
 
 // Material
 import { withStyles } from "@material-ui/core/styles";
@@ -37,7 +39,7 @@ const theme = createMuiTheme({
 
 class App extends Component {
   state = {
-    value: 1
+    value: 0
   };
 
   handleChange = (event, value) => {
@@ -48,24 +50,26 @@ class App extends Component {
     const { value } = this.state;
     const { classes } = this.props;
     return (
-      <div className="App">
-        <CssBaseline />
-        <MuiThemeProvider theme={theme}>
-          <div className={classes.mainContent}>
-            {this.state.value === 0 ? <List /> : <Service />}
-          </div>
-          <Paper elevation={2} className={classes.botNav}>
-            <BottomNavigation
-              value={value}
-              onChange={this.handleChange}
-              showLabels
-            >
-              <BottomNavigationAction label="List" icon={<Person />} />
-              <BottomNavigationAction label="Service" icon={<ListAlt />} />
-            </BottomNavigation>
-          </Paper>
-        </MuiThemeProvider>
-      </div>
+      <Provider store={store}>
+        <div className="App">
+          <CssBaseline />
+          <MuiThemeProvider theme={theme}>
+            <div className={classes.mainContent}>
+              {this.state.value === 0 ? <List /> : <Service />}
+            </div>
+            <Paper elevation={2} className={classes.botNav}>
+              <BottomNavigation
+                value={value}
+                onChange={this.handleChange}
+                showLabels
+              >
+                <BottomNavigationAction label="List" icon={<Person />} />
+                <BottomNavigationAction label="Service" icon={<ListAlt />} />
+              </BottomNavigation>
+            </Paper>
+          </MuiThemeProvider>
+        </div>
+      </Provider>
     );
   }
 }
