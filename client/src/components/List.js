@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import ProfileModal from "./ProfileModal";
 import { connect } from "react-redux";
 import { getEmps } from "../actions/employeActions";
+import { getPos } from "../actions/positionsAction";
 
 import { withStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
@@ -19,6 +21,8 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 
 import deepPurple from "@material-ui/core/colors/deepPurple";
 
@@ -26,7 +30,7 @@ const styles = {
   card: {
     margin: 5
   },
-  cardAA: {
+  cardActionArea: {
     width: "100%"
   },
   cardContent: {
@@ -40,17 +44,23 @@ const styles = {
 };
 
 export class List extends Component {
-  constructor(props) {
-    super(props),
-      (this.state = {
-        emps: [],
-        dialogOpen: false,
-        selectedProfile: {}
-      });
-  }
+  // constructor(props) {
+  //   super(props),
+  //     (this.state = {
+  //       emps: [],
+  //       dialogOpen: false,
+  //       selectedProfile: {}
+  //     });
+  // }
+  state = {
+    emps: [],
+    pos: [],
+    dialogOpen: false,
+    selectedProfile: {}
+  };
   componentDidMount() {
     this.props.getEmps();
-    // this.setState({ emps: this.props.employe.emps });
+    this.props.getPos();
     this.forceUpdate();
   }
   handleOpenDialog = selectedProfile => {
@@ -60,10 +70,17 @@ export class List extends Component {
     this.setState({ dialogOpen: false });
   };
   handleSaveDialogState = () => {
-    this.setState({ dialogOpen: false });
+    this.handleCloseDialog();
   };
+  handleChange(e) {
+    let tmp = this.state.selectedProfile;
+    tmp[e.target.id] = e.target.value;
+    this.setState({ selectedProfile: tmp });
+  }
   render() {
     const { classes } = this.props;
+    console.log("props", this.props);
+    console.log("state", this.state);
     return (
       <div>
         <AppBar position="sticky">
@@ -81,7 +98,7 @@ export class List extends Component {
           <Card key={item._id} className={classes.card}>
             <CardActionArea
               onClick={() => this.handleOpenDialog(item)}
-              className={classes.cardAA}
+              className={classes.cardActionArea}
             >
               <CardContent className={classes.cardContent}>
                 <CardHeader
@@ -102,22 +119,93 @@ export class List extends Component {
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogContent>
             <TextField
+              id="firstName"
               label="First Name"
               type="search"
               className={classes.textField}
               margin="normal"
               value={this.state.selectedProfile.firstName}
+              onChange={this.handleChange.bind(this)}
+            />
+            <TextField
+              id="lastName"
+              label="Last Name"
+              type="search"
+              className={classes.textField}
+              margin="normal"
+              value={this.state.selectedProfile.lastName}
+              onChange={this.handleChange.bind(this)}
+            />
+            <TextField
+              id="dob"
+              label="Date of birth"
+              type="date"
+              className={classes.textField}
+              margin="normal"
+              value={this.state.selectedProfile.dob}
+              onChange={this.handleChange.bind(this)}
+            />
+            <TextField
+              label="Position"
+              type="search"
+              className={classes.textField}
+              margin="normal"
+              value={this.state.selectedProfile.position}
+            />
+            <Select
+              id="position"
+              value={this.state.selectedProfile.position}
+              onChange={this.handleChange.bind(this)}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {this.props.positions.pos.map(item => (
+                <MenuItem key={item.position} value={item.position}>
+                  {item.position}
+                </MenuItem>
+              ))}
+            </Select>
+            <TextField
+              label="Business Hours"
+              type="search"
+              className={classes.textField}
+              margin="normal"
+              value={this.state.selectedProfile.businessHours}
+            />
+            <TextField
+              label="Work place"
+              type="search"
+              className={classes.textField}
+              margin="normal"
+              value={this.state.selectedProfile.workPlace}
+            />
+            <TextField
+              label="Lunch time"
+              type="search"
+              className={classes.textField}
+              margin="normal"
+              value={this.state.selectedProfile.lunchTime}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleCloseDialog} color="primary">
+            <Button onClick={() => this.handleCloseDialog()} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleSaveDialogState} color="primary">
+            <Button
+              onClick={() => this.handleSaveDialogState()}
+              color="primary"
+            >
               Save
             </Button>
           </DialogActions>
         </Dialog>
+        {/* <ProfileModal
+          dialogOpen={this.state.dialogOpen}
+          selectedProfile={this.state.selectedProfile}
+          onClose={() => this.handleCloseDialog}
+          onSave={() => this.handleSaveDialogState}
+        /> */}
       </div>
     );
   }
@@ -126,14 +214,17 @@ export class List extends Component {
 List.propTypes = {
   classes: PropTypes.object.isRequired,
   getEmps: PropTypes.func.isRequired,
-  employe: PropTypes.object.isRequired
+  getPos: PropTypes.func.isRequired,
+  employe: PropTypes.object.isRequired,
+  positions: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  employe: state.employe
+  employe: state.employe,
+  positions: state.positions
 });
 
 export default connect(
   mapStateToProps,
-  { getEmps }
+  { getEmps, getPos }
 )(withStyles(styles)(List));

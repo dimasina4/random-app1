@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 const employes = require("./routes/api/employes");
+const positions = require("./routes/api/positions");
 
 const app = express();
 
@@ -17,6 +18,7 @@ mongoose
   .catch(err => console.log(err));
 
 app.use("/api/employes", employes);
+app.use("/api/positions", positions);
 
 const port = 5000;
 
