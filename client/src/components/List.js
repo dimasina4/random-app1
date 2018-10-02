@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ProfileModal from "./ProfileModal";
 import { connect } from "react-redux";
-import { getEmps } from "../actions/employeActions";
+import { getEmps, getEmp, setEmp } from "../actions/employeActions";
 import { getPos } from "../actions/positionsAction";
 
 import { withStyles } from "@material-ui/core/styles";
@@ -23,6 +23,9 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
 
 import deepPurple from "@material-ui/core/colors/deepPurple";
 
@@ -54,6 +57,7 @@ export class List extends Component {
   // }
   state = {
     emps: [],
+    emp: {},
     pos: [],
     dialogOpen: false,
     selectedProfile: {}
@@ -65,22 +69,22 @@ export class List extends Component {
   }
   handleOpenDialog = selectedProfile => {
     this.setState({ dialogOpen: true, selectedProfile });
+    this.props.getEmp(selectedProfile._id);
   };
   handleCloseDialog = () => {
     this.setState({ dialogOpen: false });
   };
   handleSaveDialogState = () => {
+    this.props.setEmp(this.state.selectedProfile);
     this.handleCloseDialog();
   };
   handleChange(e) {
     let tmp = this.state.selectedProfile;
-    tmp[e.target.id] = e.target.value;
+    tmp[e.target.name] = e.target.value;
     this.setState({ selectedProfile: tmp });
   }
   render() {
     const { classes } = this.props;
-    console.log("props", this.props);
-    console.log("state", this.state);
     return (
       <div>
         <AppBar position="sticky">
@@ -119,7 +123,7 @@ export class List extends Component {
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogContent>
             <TextField
-              id="firstName"
+              name="firstName"
               label="First Name"
               type="search"
               className={classes.textField}
@@ -128,7 +132,7 @@ export class List extends Component {
               onChange={this.handleChange.bind(this)}
             />
             <TextField
-              id="lastName"
+              name="lastName"
               label="Last Name"
               type="search"
               className={classes.textField}
@@ -137,55 +141,65 @@ export class List extends Component {
               onChange={this.handleChange.bind(this)}
             />
             <TextField
-              id="dob"
+              name="dob"
               label="Date of birth"
               type="date"
               className={classes.textField}
               margin="normal"
+              InputLabelProps={{
+                shrink: true
+              }}
               value={this.state.selectedProfile.dob}
               onChange={this.handleChange.bind(this)}
             />
-            <TextField
-              label="Position"
-              type="search"
-              className={classes.textField}
-              margin="normal"
-              value={this.state.selectedProfile.position}
-            />
-            <Select
-              id="position"
-              value={this.state.selectedProfile.position}
-              onChange={this.handleChange.bind(this)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {this.props.positions.pos.map(item => (
-                <MenuItem key={item.position} value={item.position}>
-                  {item.position}
+            <FormControl>
+              <InputLabel htmlFor="position-helper">Position</InputLabel>
+              <Select
+                inputProps={{
+                  name: "position",
+                  id: "position-helper"
+                }}
+                name="position2"
+                value={this.state.selectedProfile.position}
+                onChange={this.handleChange.bind(this)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
                 </MenuItem>
-              ))}
-            </Select>
+                {this.props.positions.pos.map(item => (
+                  <MenuItem key={item.position} value={item.position}>
+                    {item.position}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <TextField
+              name="businessHours"
               label="Business Hours"
               type="search"
               className={classes.textField}
               margin="normal"
               value={this.state.selectedProfile.businessHours}
+              onChange={this.handleChange.bind(this)}
             />
             <TextField
+              name="workPlace"
               label="Work place"
               type="search"
               className={classes.textField}
               margin="normal"
               value={this.state.selectedProfile.workPlace}
+              onChange={this.handleChange.bind(this)}
             />
             <TextField
+              name="lunchTime"
               label="Lunch time"
               type="search"
               className={classes.textField}
               margin="normal"
               value={this.state.selectedProfile.lunchTime}
+              onChange={this.handleChange.bind(this)}
             />
           </DialogContent>
           <DialogActions>
@@ -214,7 +228,9 @@ export class List extends Component {
 List.propTypes = {
   classes: PropTypes.object.isRequired,
   getEmps: PropTypes.func.isRequired,
+  getEmp: PropTypes.func.isRequired,
   getPos: PropTypes.func.isRequired,
+  setEmp: PropTypes.func.isRequired,
   employe: PropTypes.object.isRequired,
   positions: PropTypes.object.isRequired
 };
@@ -226,5 +242,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getEmps, getPos }
+  { getEmps, getPos, getEmp, setEmp }
 )(withStyles(styles)(List));

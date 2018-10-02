@@ -19,7 +19,7 @@ const EmployeSchema = new Schema({
     required: true
   },
   businessHours: String,
-  workPlace: Number,
+  workPlace: String,
   lunchTime: String
 });
 
