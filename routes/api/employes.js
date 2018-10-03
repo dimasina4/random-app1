@@ -18,7 +18,6 @@ router.get("/:id", (req, res) => {
 
 // POST new item
 router.post("/", (req, res) => {
-  console.log(req.body);
   if (req.body._id) {
     Employe.findByIdAndUpdate(req.body._id, req.body).then(() => {
       Employe.find()
@@ -71,7 +70,13 @@ router.post("/", (req, res) => {
 // DELETE item
 router.delete("/delete/:id", (req, res) => {
   Employe.findById(req.params.id)
-    .then(emp => emp.remove().then(() => res.json({ success: true })))
+    .then(emp =>
+      emp.remove().then(
+        Employe.find()
+          .sort({ firstName: 1 })
+          .then(items => res.json(items))
+      )
+    )
     .catch(err => res.status(404).json({ success: false }));
 });
 

@@ -14,19 +14,28 @@ import Paper from "@material-ui/core/Paper";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import { Person, ListAlt } from "@material-ui/icons";
+import Typography from "@material-ui/core/Typography";
+import AppBar from "@material-ui/core/AppBar";
+import ToolBar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
 
+import { Refresh } from "@material-ui/icons";
 // CSS
 import "./css/style.css";
 
 const styles = theme => ({
   mainContent: {
-    height: "calc(100vh - 56px)",
+    marginTop: 64,
+    height: "calc(100vh - 56px - 64px)",
     overflow: "auto"
   },
   botNav: {
     position: "fixed",
     width: "100%",
     bottom: 0
+  },
+  serviceTitle: {
+    flexGrow: 1
   }
 });
 
@@ -38,12 +47,25 @@ const theme = createMuiTheme({
 });
 
 class App extends Component {
-  state = {
-    value: 0
-  };
+  constructor(props) {
+    super(props),
+      (this.state = {
+        value: 0
+      });
+  }
+  // state = {
+  //   value: 0,
+
+  // };
+
+  componentDidMount() {}
 
   handleChange = (event, value) => {
     this.setState({ value });
+  };
+
+  handleRefreshChild = () => {
+    this.child.refreshContent();
   };
 
   render() {
@@ -54,10 +76,40 @@ class App extends Component {
         <div className="App">
           <CssBaseline />
           <MuiThemeProvider theme={theme}>
+            <AppBar id="mainAppBar" position="fixed">
+              {this.state.value === 0 ? (
+                <ToolBar>
+                  <Typography
+                    className={classes.listTitle}
+                    color="inherit"
+                    variant="title"
+                  >
+                    List
+                  </Typography>
+                </ToolBar>
+              ) : (
+                <ToolBar>
+                  <Typography
+                    color="inherit"
+                    variant="title"
+                    className={classes.serviceTitle}
+                  >
+                    Service
+                  </Typography>
+                  <IconButton color="inherit" onClick={this.handleRefreshChild}>
+                    <Refresh />
+                  </IconButton>
+                </ToolBar>
+              )}
+            </AppBar>
             <div className={classes.mainContent}>
-              {this.state.value === 0 ? <List /> : <Service />}
+              {this.state.value === 0 ? (
+                <List />
+              ) : (
+                <Service onRef={ref => (this.child = ref)} />
+              )}
             </div>
-            <Paper elevation={2} className={classes.botNav}>
+            <Paper id="mainBottomNav" elevation={2} className={classes.botNav}>
               <BottomNavigation
                 value={value}
                 onChange={this.handleChange}

@@ -8,6 +8,7 @@ import {
 } from "../actions/types";
 
 export const getEmps = () => dispatch => {
+  dispatch(setEmpsLoading());
   axios.get("/api/employes").then(res =>
     dispatch({
       type: GET_EMPS,
@@ -27,10 +28,27 @@ export const getEmp = id => dispatch => {
 };
 
 export const setEmp = item => dispatch => {
+  dispatch(setEmpsLoading());
   axios.post("/api/employes", item).then(res =>
     dispatch({
       type: ADD_EMP,
       payload: res.data
     })
   );
+};
+
+export const deleteEmp = item => dispatch => {
+  dispatch(setEmpsLoading());
+  axios.delete("/api/employes/delete/" + item).then(res =>
+    dispatch({
+      type: DELETE_EMP,
+      payload: res.data
+    })
+  );
+};
+
+export const setEmpsLoading = () => {
+  return {
+    type: EMP_LOADING
+  };
 };

@@ -8,20 +8,11 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import AppBar from "@material-ui/core/AppBar";
-import ToolBar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Avatar from "@material-ui/core/Avatar";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import { Refresh } from "@material-ui/icons";
-
 const styles = theme => ({
-  serviceTitle: {
-    flexGrow: 1
-  },
   avatar: {
     width: "50%",
     height: "auto",
@@ -94,31 +85,21 @@ class Service extends Component {
         console.log(err);
       });
   }
-  handleRefreshButtonClick = () => {
-    this.setState({ user: {} });
-    this.getUserFromApi();
-  };
   componentDidMount() {
+    this.getUserFromApi();
+    this.props.onRef(this);
+  }
+  componentWillUnmount() {
+    this.props.onRef(null);
+  }
+  refreshContent() {
+    this.setState({ user: {} });
     this.getUserFromApi();
   }
   render() {
     const { classes } = this.props;
     return (
       <div>
-        <AppBar position="sticky">
-          <ToolBar>
-            <Typography
-              color="inherit"
-              variant="title"
-              className={classes.serviceTitle}
-            >
-              Service
-            </Typography>
-            <IconButton color="inherit" onClick={this.handleRefreshButtonClick}>
-              <Refresh />
-            </IconButton>
-          </ToolBar>
-        </AppBar>
         {Object.keys(this.state.user).length === 0 &&
         this.state.user.constructor === Object ? (
           <div>

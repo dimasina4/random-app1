@@ -8,7 +8,8 @@ import {
 
 const initialState = {
   emps: [],
-  emp: {}
+  emp: {},
+  loading: false
 };
 
 export default function(state = initialState, action) {
@@ -16,7 +17,8 @@ export default function(state = initialState, action) {
     case GET_EMPS:
       return {
         ...state,
-        emps: action.payload
+        emps: action.payload,
+        loading: false
       };
     case GET_EMP:
       return {
@@ -26,7 +28,19 @@ export default function(state = initialState, action) {
     case ADD_EMP:
       return {
         ...state,
-        emps: action.payload
+        emps: action.payload,
+        loading: false
+      };
+    case DELETE_EMP:
+      return {
+        ...state,
+        emps: action.payload,
+        loading: false
+      };
+    case EMP_LOADING:
+      return {
+        ...state,
+        loading: true
       };
     default:
       return state;

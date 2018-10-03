@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { getEmp, setEmp, deleteEmp } from "../actions/employeActions";
+import { getPos } from "../actions/positionsAction";
 
 import { withStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
@@ -21,12 +24,28 @@ class ProfileModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dialogOpen: "",
       selectedProfile: {}
     };
   }
-  handleCloseDialog() {
-    this.props.onClose();
+  componentDidMount() {
+    this.setState({ selectedProfile: this.props.selectedProfile });
+    this.props.getPos();
+  }
+  handleCloseDialog = () => {
+    this.setState({ dialogOpen: false });
+  };
+  handleDeleteDialogState = () => {
+    this.props.deleteEmp(this.state.selectedProfile._id);
+    this.handleCloseDialog();
+  };
+  handleSaveDialogState = () => {
+    this.props.setEmp(this.state.selectedProfile);
+    this.handleCloseDialog();
+  };
+  handleChange(e) {
+    let tmp = this.state.selectedProfile;
+    tmp[e.target.name] = e.target.value;
+    this.setState({ selectedProfile: tmp });
   }
   render() {
     const { classes } = this.props;
@@ -34,7 +53,7 @@ class ProfileModal extends Component {
     console.log("state", this.state);
     return (
       <div>
-        <Dialog open={this.state.dialogOpen}>
+        <Dialog open={this.props.dialogOpen}>
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogContent>
             <TextField
@@ -67,13 +86,6 @@ class ProfileModal extends Component {
               value={this.state.selectedProfile.dob}
               onChange={this.handleChange.bind(this)}
             />
-            {/* <TextField
-              label="Position"
-              type="search"
-              className={classes.textField}
-              margin="normal"
-              value={this.state.selectedProfile.position}
-            /> */}
             <FormControl>
               <InputLabel htmlFor="position-helper">Position</InputLabel>
               <Select
@@ -82,7 +94,11 @@ class ProfileModal extends Component {
                   id: "position-helper"
                 }}
                 name="position2"
-                value={this.state.selectedProfile.position}
+                value={
+                  this.state.selectedProfile.position
+                    ? this.state.selectedProfile.position
+                    : ""
+                }
                 onChange={this.handleChange.bind(this)}
               >
                 <MenuItem value="">
@@ -129,6 +145,12 @@ class ProfileModal extends Component {
               Cancel
             </Button>
             <Button
+              onClick={() => this.handleDeleteDialogState()}
+              color="primary"
+            >
+              Delete
+            </Button>
+            <Button
               onClick={() => this.handleSaveDialogState()}
               color="primary"
             >
@@ -143,8 +165,20 @@ class ProfileModal extends Component {
 
 ProfileModal.propTypes = {
   classes: PropTypes.object.isRequired,
+  getEmp: PropTypes.func.isRequired,
+  getPos: PropTypes.func.isRequired,
+  setEmp: PropTypes.func.isRequired,
+  deleteEmp: PropTypes.func.isRequired,
   dialogOpen: PropTypes.bool.isRequired,
   selectedProfile: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ProfileModal);
+const mapStateToProps = state => ({
+  employe: state.employe,
+  positions: state.positions
+});
+
+export default connect(
+  mapStateToProps,
+  { getPos, getEmp, setEmp, deleteEmp }
+)(withStyles(styles)(ProfileModal));
