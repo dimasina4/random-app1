@@ -28,19 +28,35 @@ class ProfileModal extends Component {
     };
   }
   componentDidMount() {
+    console.log("from DidMount", this.props.selectedProfile);
     this.setState({ selectedProfile: this.props.selectedProfile });
     this.props.getPos();
   }
+  componentWillReceiveProps(newProps) {
+    this.setState({ selectedProfile: newProps.selectedProfile });
+  }
+
   handleCloseDialog = () => {
     this.setState({ dialogOpen: false });
   };
   handleDeleteDialogState = () => {
     this.props.deleteEmp(this.state.selectedProfile._id);
-    this.handleCloseDialog();
+    this.props.closeDialog();
   };
   handleSaveDialogState = () => {
-    this.props.setEmp(this.state.selectedProfile);
-    this.handleCloseDialog();
+    if (
+      this.state.selectedProfile.firstName === "" ||
+      this.state.selectedProfile.lastName === "" ||
+      this.state.selectedProfile.dob === "" ||
+      this.state.selectedProfile.position === ""
+    ) {
+      alert("Fill all fields");
+      document.getElementById("firstName").setAttribute("disabled", "");
+    } else {
+      this.props.setEmp(this.state.selectedProfile);
+      this;
+      this.props.closeDialog();
+    }
   };
   handleChange(e) {
     let tmp = this.state.selectedProfile;
@@ -49,15 +65,17 @@ class ProfileModal extends Component {
   }
   render() {
     const { classes } = this.props;
-    console.log("props", this.props);
-    console.log("state", this.state);
+    // console.log("props", this.props);
+    // console.log("state", this.state);
     return (
       <div>
         <Dialog open={this.props.dialogOpen}>
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogContent>
             <TextField
+              required
               name="firstName"
+              id="firstName"
               label="First Name"
               type="search"
               className={classes.textField}
@@ -66,6 +84,8 @@ class ProfileModal extends Component {
               onChange={this.handleChange.bind(this)}
             />
             <TextField
+              required
+              error
               name="lastName"
               label="Last Name"
               type="search"
@@ -75,6 +95,7 @@ class ProfileModal extends Component {
               onChange={this.handleChange.bind(this)}
             />
             <TextField
+              required
               name="dob"
               label="Date of birth"
               type="date"
@@ -86,7 +107,7 @@ class ProfileModal extends Component {
               value={this.state.selectedProfile.dob}
               onChange={this.handleChange.bind(this)}
             />
-            <FormControl>
+            <FormControl required>
               <InputLabel htmlFor="position-helper">Position</InputLabel>
               <Select
                 inputProps={{
@@ -141,15 +162,19 @@ class ProfileModal extends Component {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => this.handleCloseDialog()} color="primary">
+            <Button onClick={() => this.props.closeDialog()} color="primary">
               Cancel
             </Button>
-            <Button
-              onClick={() => this.handleDeleteDialogState()}
-              color="primary"
-            >
-              Delete
-            </Button>
+            {this.props.selectedProfile._id ? (
+              <Button
+                onClick={() => this.handleDeleteDialogState()}
+                color="primary"
+              >
+                Delete
+              </Button>
+            ) : (
+              <div />
+            )}
             <Button
               onClick={() => this.handleSaveDialogState()}
               color="primary"
@@ -170,7 +195,8 @@ ProfileModal.propTypes = {
   setEmp: PropTypes.func.isRequired,
   deleteEmp: PropTypes.func.isRequired,
   dialogOpen: PropTypes.bool.isRequired,
-  selectedProfile: PropTypes.object.isRequired
+  selectedProfile: PropTypes.object.isRequired,
+  closeDialog: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

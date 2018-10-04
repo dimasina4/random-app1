@@ -24,6 +24,7 @@ import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Grow from "@material-ui/core/Grow";
 
 import AddIcon from "@material-ui/icons/Add";
 
@@ -70,7 +71,8 @@ export class List extends Component {
     emp: {},
     pos: [],
     dialogOpen: false,
-    selectedProfile: {}
+    selectedProfile: {},
+    checked: true
   };
   componentDidMount() {
     this.props.getEmps();
@@ -116,6 +118,7 @@ export class List extends Component {
   }
   render() {
     const { classes } = this.props;
+    const { checked } = this.state;
     return (
       <div>
         {this.props.employe.loading ? (
@@ -127,27 +130,36 @@ export class List extends Component {
           </div>
         ) : (
           <div>
-            {this.props.employe.emps.map(item => (
-              <Card key={item._id} className={classes.card}>
-                <CardActionArea
-                  onClick={() => this.handleEditProfile(item)}
-                  className={classes.cardActionArea}
+            {this.props.employe.emps.map((item, index) => {
+              return (
+                <Grow
+                  key={item._id}
+                  in={checked}
+                  style={{ transformOrigin: "0 0 0" }}
+                  {...(checked ? { timeout: 500 * index } : {})}
                 >
-                  <CardContent className={classes.cardContent}>
-                    <CardHeader
-                      avatar={
-                        <Avatar className={classes.avatar}>
-                          {item.firstName[0].toUpperCase()}
-                        </Avatar>
-                      }
-                      title={item.firstName}
-                      subheader={item.position}
-                      className={classes.cardHeader}
-                    />
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
+                  <Card className={classes.card}>
+                    <CardActionArea
+                      onClick={() => this.handleEditProfile(item)}
+                      className={classes.cardActionArea}
+                    >
+                      <CardContent className={classes.cardContent}>
+                        <CardHeader
+                          avatar={
+                            <Avatar className={classes.avatar}>
+                              {item.firstName[0].toUpperCase()}
+                            </Avatar>
+                          }
+                          title={item.firstName}
+                          subheader={item.position}
+                          className={classes.cardHeader}
+                        />
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grow>
+              );
+            })}
             <Button
               variant="fab"
               className={classes.addBtn}
@@ -271,6 +283,7 @@ export class List extends Component {
               <ProfileModal
                 dialogOpen={this.state.dialogOpen}
                 selectedProfile={this.state.selectedProfile}
+                closeDialog={this.handleCloseDialog}
               />
             )}
           </div>
